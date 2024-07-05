@@ -101,7 +101,7 @@ static struct vlan_translation_table evt[] = {
 // Interface, matching VID, Generator/Recovery, num of ifaces, iface names
 static struct frer_config_item cfg[] = {
     { "aeth0", 10, FRER_GEN, 2, { "enp3s0", "enp6s0" }, 0 },
-    { "beth0", 10, FRER_GEN, 2, { "enp4s0", "enp7s0" }, 0 },
+    { "beth0", 10, FRER_GEN, 3, { "enp4s0", "enp7s0", "enp7s0" }, 0 },
     { "enp3s0", 10, FRER_RCVY, 1, { "aeth0" }, 0 },
     { "enp6s0", 10, FRER_RCVY, 1, { "aeth0" }, 0 },
     { "enp4s0", 10, FRER_RCVY, 1, { "beth0" }, 0 },

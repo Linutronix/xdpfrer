@@ -391,11 +391,30 @@ int replicate(struct xdp_md *pkt)
     //bpf_printk("Broadcast the packet");
 
     return bpf_redirect_map(tx, 0, BPF_F_BROADCAST | BPF_F_EXCLUDE_INGRESS);
+    //return bpf_redirect_map(tx, 1, 0);
 }
 
 SEC("xdp/devmap")
 int replicate_postprocessing(struct xdp_md *pkt)
 {
+    int vid = get_vlan_id(pkt);
+    if (vid < 0)
+        return XDP_DROP;
+
+    struct tx_ifaces *tx = bpf_map_lookup_elem(&replicate_tx_map, &vid);
+    if (!tx)
+        return XDP_DROP;
+
+    int foo = pkt->map_key;
+    struct bpf_devmap_val *iface = bpf_map_lookup_elem(tx, &foo);
+    if (!iface)
+        return XDP_DROP;
+
+    bpf_printk("pkt->egress_ifindex %i pkt->map_key %i looked up egress_ifindex %i",
+		    pkt->egress_ifindex,
+		    pkt->map_key,
+		    iface->ifindex);
+
     int ret = change_vlan(pkt, pkt->egress_ifindex, true);
     if (ret < 0)
         return XDP_DROP;
